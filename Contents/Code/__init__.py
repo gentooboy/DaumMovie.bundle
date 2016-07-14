@@ -153,24 +153,24 @@ def updateDaumMovie(cate, metadata):
         meta_director = metadata.directors.new()
         if 'name' in director:
           meta_director.name = director['name']
-        if 'photo' in director:
-          meta_director.photo = director['photo']
-    if producers:
-      metadata.producers.clear()
-      for producer in producers:
-        meta_producer = metadata.producers.new()
-        if 'name' in producer:
-          meta_producer.name = producer['name']
-        if 'photo' in producer:
-          meta_producer.photo = producer['photo']
+        # if 'photo' in director:
+        #   meta_director.photo = director['photo']
+    # if producers:
+    #   metadata.producers.clear()
+    #   for producer in producers:
+    #     meta_producer = metadata.producers.new()
+    #     if 'name' in producer:
+    #       meta_producer.name = producer['name']
+    #     if 'photo' in producer:
+    #       meta_producer.photo = producer['photo']
     if writers:
       metadata.writers.clear()
       for writer in writers:
         meta_writer = metadata.writers.new()
         if 'name' in writer:
           meta_writer.name = writer['name']
-        if 'photo' in writer:
-          meta_writer.photo = writer['photo']
+        # if 'photo' in writer:
+        #   meta_writer.photo = writer['photo']
     if roles:
       metadata.roles.clear()
       for role in roles:
@@ -178,9 +178,9 @@ def updateDaumMovie(cate, metadata):
         if 'role' in role:
           meta_role.role = role['role']
         if 'name' in role:
-          meta_role.name = role['name']
-        if 'photo' in role:
-          meta_role.photo = role['photo']
+          meta_role.actor = role['name']
+        # if 'photo' in role:
+        #   meta_role.photo = role['photo']
 
   # (3) from photo page
   url_tmpl = DAUM_TV_PHOTO if cate == 'tv' else DAUM_MOVIE_PHOTO
@@ -242,16 +242,16 @@ def updateDaumMovie(cate, metadata):
             meta_director = episode.directors.new()
             if 'name' in director:
               meta_director.name = director['name']
-            if 'photo' in director:
-              meta_director.photo = director['photo']
+            # if 'photo' in director:
+            #   meta_director.photo = director['photo']
         if writers:
           episode.writers.clear()
           for writer in writers:
             meta_writer = episode.writers.new()
             if 'name' in writer:
               meta_writer.name = writer['name']
-            if 'photo' in writer:
-              meta_writer.photo = writer['photo']
+            # if 'photo' in writer:
+            #   meta_writer.photo = writer['photo']
 
     # (5) fill missing info
     # if Prefs['override_tv_id'] != 'None':
