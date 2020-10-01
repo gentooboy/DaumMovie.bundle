@@ -9,7 +9,7 @@ DAUM_MOVIE_SGST   = "https://suggest-bar.daum.net/suggest?id=movie&cate=movie&mu
 DAUM_MOVIE_DETAIL = "http://movie.daum.net/moviedb/main?movieId=%s"
 # DAUM_MOVIE_DETAIL = "http://movie.daum.net/data/movie/movie_info/detail.json?movieId=%s"
 DAUM_MOVIE_CAST   = "http://movie.daum.net/data/movie/movie_info/cast_crew.json?pageNo=1&pageSize=100&movieId=%s"
-DAUM_MOVIE_PHOTO  = "http://movie.daum.net/data/movie/photo/movie/list.json?pageNo=1&pageSize=100&id=%s"
+DAUM_MOVIE_PHOTO  = "http://movie.daum.net/data/movie/photo/movie/list.json?pageNo=%s&pageSize=100&id=%s"
 
 DAUM_TV_SRCH      = "https://search.daum.net/search?w=tot&q=%s&rtmaxcoll=TVP"
 DAUM_TV_DETAIL    = "https://search.daum.net/search?w=%s&q=%s&irk=%s&irt=tv-program&DA=TVP"
@@ -336,26 +336,30 @@ def updateDaumMovie(metadata):
 
   # (3) from photo page
   url_tmpl = DAUM_MOVIE_PHOTO
-  data = JSON.ObjectFromURL(url=url_tmpl % metadata.id)
   max_poster = int(Prefs['max_num_posters'])
   max_art = int(Prefs['max_num_arts'])
   idx_poster = 0
   idx_art = 0
-  for item in data['data']:
-    if item['photoCategory'] == '1' and idx_poster < max_poster:
-      idx_poster += 1
-      art_url = item['fullname']
-      if art_url and art_url not in metadata.posters:
-        try:
-          metadata.posters[art_url] = Proxy.Preview(downloadImage(art_url), sort_order = idx_poster)
-        except Exception, e: Log(str(e))
-    elif item['photoCategory'] in ['2', '50'] and idx_art < max_art:
-      idx_art += 1
-      art_url = item['fullname']
-      if art_url and art_url not in metadata.art:
-        try:
-          metadata.art[art_url] = Proxy.Preview(downloadImage(art_url), sort_order = idx_art)
-        except Exception, e: Log(str(e))
+  page_num = 1
+  while idx_poster == 0:
+    Log.Debug("Search ")
+    data = JSON.ObjectFromURL(url=url_tmpl % (page_num, metadata.id))
+    for item in data['data']:
+      if item['photoCategory'] == '1' and idx_poster < max_poster:
+        idx_poster += 1
+        art_url = item['fullname']
+        if art_url and art_url not in metadata.posters:
+          try:
+            metadata.posters[art_url] = Proxy.Preview(downloadImage(art_url), sort_order = idx_poster)
+          except Exception, e: Log(str(e))
+      elif item['photoCategory'] in ['2', '50'] and idx_art < max_art:
+        idx_art += 1
+        art_url = item['fullname']
+        if art_url and art_url not in metadata.art:
+          try:
+            metadata.art[art_url] = Proxy.Preview(downloadImage(art_url), sort_order = idx_art)
+          except Exception, e: Log(str(e))
+    page_num += 1
   Log.Debug('Total %d posters, %d artworks' %(idx_poster, idx_art))
   if len(metadata.posters) == 0:
     if poster_url:
